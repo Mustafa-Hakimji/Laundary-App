@@ -29,10 +29,17 @@ const productSlice = createSlice({
         itemPresent.quantity--;
       }
     },
+    removeAllProducts(state) {
+      state.product.map(item => (item.quantity = 0));
+    },
   },
 });
 
-export const {getProducts, incrementQuantity, decrementQuantity} =
-  productSlice.actions;
+export const {
+  getProducts,
+  incrementQuantity,
+  decrementQuantity,
+  removeAllProducts,
+} = productSlice.actions;
 
 export default productSlice.reducer;

@@ -3,12 +3,14 @@ import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {resetAllCart} from '../Providers/cartSlice';
+import {removeAllProducts} from '../Providers/ProductSlice';
 
 const SuccessfullScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const resetAll = () => {
-    // dispatch(resetAllCart());
+    dispatch(resetAllCart());
+    dispatch(removeAllProducts());
     navigation.navigate('Home');
   };
   return (

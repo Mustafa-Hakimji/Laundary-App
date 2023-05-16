@@ -44,6 +44,7 @@ const cartSlice = createSlice({
       }
     },
     resetAllCart(state) {
+      state.cart.map(item => (item.quantity = 0));
       state.cart = [];
     },
   },
