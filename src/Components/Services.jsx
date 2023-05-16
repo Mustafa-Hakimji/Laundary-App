@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getProducts} from '../Providers/ProductSlice';
 
 const Services = () => {
   const services = [
@@ -32,6 +34,7 @@ const Services = () => {
       name: 'Cleaning',
     },
   ];
+
   return (
     <View style={{flex: 1}}>
       <Text>Services available</Text>

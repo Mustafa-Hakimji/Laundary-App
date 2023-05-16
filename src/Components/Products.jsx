@@ -1,7 +1,21 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  decrementQuantity,
+  getProducts,
+  incrementQuantity,
+} from '../Providers/ProductSlice';
+import {
+  addToCart,
+  decrementQuantityCart,
+  incrementQuantityCart,
+} from '../Providers/cartSlice';
 
 const Products = () => {
+  const dispatch = useDispatch();
+  const cart = useSelector(state => state.cart.cart);
+  const product = useSelector(state => state.product.product);
   const services = [
     {
       id: '0',
@@ -53,10 +67,24 @@ const Products = () => {
       price: 10,
     },
   ];
+
+  useEffect(() => {
+    if (product.length > 0) return;
+
+    const fetchProduct = () => {
+      services.map(service => dispatch(getProducts(service)));
+    };
+    fetchProduct();
+  }, []);
+
+  const addItemTocart = item => {
+    dispatch(addToCart(item)); // Item added to cart.
+    dispatch(incrementQuantity(item)); //Increment porduct quantity
+  };
   return (
     <View style={{flex: 1}}>
-      {services &&
-        services.map((item, index) => {
+      {product &&
+        product.map((item, index) => {
           return (
             <View
               key={index}
@@ -76,24 +104,118 @@ const Products = () => {
                 source={{uri: item.image}}
                 style={{height: 70, width: 70}}
               />
-              <View>
-                <Text>{item.name}</Text>
-                <Text>${item.price}</Text>
+              <View
+                style={{
+                  alignItems: 'flex-start',
+                  justifyContent: 'flex-start',
+                }}>
+                <Text style={{fontWeight: 'bold', fontSize: 17}}>
+                  {item.name}
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 17}}>
+                  ${item.price}
+                </Text>
               </View>
               <View>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: 'white',
-                    borderWidth: 2,
-                    borderColor: 'lightgreen',
-                    padding: 3,
-                    borderRadius: 10,
-                  }}>
-                  <Text
-                    style={{fontSize: 16, fontWeight: '900', color: 'green'}}>
-                    Add cart
-                  </Text>
-                </TouchableOpacity>
+                {cart?.some(c => c.id === item.id) ? (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: 'white',
+                        borderWidth: 2,
+                        borderColor: 'lightgreen',
+                        padding: 3,
+                        borderRadius: 15,
+                        marginRight: 5,
+                        height: 30,
+                        width: 30,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      onPress={() => {
+                        dispatch(incrementQuantity(item));
+                        dispatch(incrementQuantityCart(item));
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: '900',
+                          color: 'green',
+                        }}>
+                        +
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: 'white',
+                        borderWidth: 2,
+                        borderColor: 'lightgreen',
+                        padding: 3,
+                        borderRadius: 17,
+                        height: 34,
+                        width: 34,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: '900',
+                          color: 'green',
+                        }}>
+                        {item.quantity}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: 'white',
+                        borderWidth: 2,
+                        borderColor: 'lightgreen',
+                        padding: 3,
+                        borderRadius: 15,
+                        marginLeft: 5,
+                        height: 30,
+                        width: 30,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      onPress={() => {
+                        dispatch(decrementQuantity(item));
+                        dispatch(decrementQuantityCart(item));
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: '900',
+                          color: 'green',
+                          fontWeight: '900',
+                        }}>
+                        -
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: 'white',
+                      borderWidth: 2,
+                      borderColor: 'lightgreen',
+                      padding: 3,
+                      borderRadius: 10,
+                    }}
+                    onPress={() => addItemTocart(item)}>
+                    <Text
+                      style={{fontSize: 16, fontWeight: '900', color: 'green'}}>
+                      Add cart
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           );
